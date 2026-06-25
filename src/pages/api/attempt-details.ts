@@ -29,7 +29,15 @@ export const GET: APIRoute = async ({ url }) => {
       .from(attemptQuestions)
       .where(eq(attemptQuestions.attemptId, attemptId));
 
-    return new Response(JSON.stringify(rows), { status: 200 });
+    return new Response(JSON.stringify(rows), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    });
   } catch (err) {
     console.error("Failed to fetch attempt details:", err);
     return new Response(JSON.stringify({ error: "Failed to fetch attempt details" }), { status: 500 });

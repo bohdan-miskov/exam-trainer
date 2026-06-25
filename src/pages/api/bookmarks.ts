@@ -16,7 +16,15 @@ export const GET: APIRoute = async () => {
 
     const ids = [...new Set(rows.map((r) => r.questionId))];
 
-    return new Response(JSON.stringify(ids), { status: 200 });
+    return new Response(JSON.stringify(ids), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    });
   } catch (err) {
     console.error("Failed to fetch bookmarks:", err);
     return new Response(JSON.stringify({ error: "Failed to fetch bookmarks" }), { status: 500 });

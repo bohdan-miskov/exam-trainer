@@ -56,5 +56,5 @@ export const POST: APIRoute = async ({ request }) => {
       .where(inArray(wrongAnswers.questionId, body.clearedIds));
   }
 
-  return new Response(JSON.stringify({ success: true }), { status: 200 });
+  return new Response(JSON.stringify({ success: true, attemptId }), { status: 200 });
 };

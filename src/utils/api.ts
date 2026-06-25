@@ -11,7 +11,7 @@ export interface SubmitResultsPayload {
   }[];
 }
 
-export async function submitQuizResults(payload: SubmitResultsPayload): Promise<{ success: boolean }> {
+export async function submitQuizResults(payload: SubmitResultsPayload): Promise<{ success: boolean; attemptId: number }> {
   const response = await fetch("/api/results", {
     method: "POST",
     headers: {

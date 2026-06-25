@@ -1,0 +1,38 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = "AWS Quiz App" } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <!-- Негайне перемикання теми для уникнення мерехтіння (Flicker Prevention) -->
+    <script is:inline>
+      const savedTheme = localStorage.getItem("quiz-theme") || "dark";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      
+      // На випадок якщо body ще не готовий, додаємо слухач події або відразу ставимо атрибут
+      if (document.body) {
+        document.body.setAttribute("data-theme", savedTheme);
+      } else {
+        document.addEventListener("DOMContentLoaded", () => {
+          document.body.setAttribute("data-theme", savedTheme);
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

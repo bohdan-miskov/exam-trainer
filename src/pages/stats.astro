@@ -10,24 +10,23 @@ import Layout from '../layouts/Layout.astro';
 // 1. Серверний парсинг питань з Markdown
 const allQuestions = parseMarkdown(rawMarkdown);
 
-// 2. Отримуємо актуальні ID помилок з БД
+// 2. Отримуємо дані з БД
 const sql = neon(import.meta.env.DATABASE_URL);
 const db = drizzle(sql);
 
 const wrongRows = await db.select({ questionId: wrongAnswers.questionId }).from(wrongAnswers);
 const initialWrongIds = [...new Set(wrongRows.map(r => r.questionId))];
 
-// 3. Отримуємо список закладок з БД
 const bookmarkRows = await db.select({ questionId: bookmarks.questionId }).from(bookmarks);
 const initialBookmarkedIds = [...new Set(bookmarkRows.map(r => r.questionId))];
 ---
 
-<Layout title="AWS Certification Prep">
+<Layout title="AWS Prep - Performance Stats">
   <QuizApp 
     allQuestions={allQuestions} 
     initialWrongIds={initialWrongIds} 
     initialBookmarkedIds={initialBookmarkedIds}
-    initialScreen="menu"
+    initialScreen="stats"
     client:load 
   />
 </Layout>

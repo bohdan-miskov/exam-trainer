@@ -15,7 +15,7 @@ interface MenuScreenProps {
   menuError: string | null;
 }
 
-const AWS_TOPICS = [
+export const AWS_TOPICS = [
   { id: "s3", name: "S3 Storage", keywords: ["s3", "simple storage service"] },
   { id: "ec2", name: "EC2 Compute", keywords: ["ec2", "elastic compute cloud", "ami"] },
   { id: "iam", name: "IAM Security", keywords: ["iam", "identity and access", "least privilege", "policy", "role"] },

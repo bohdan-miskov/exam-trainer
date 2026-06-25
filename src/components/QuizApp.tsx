@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { Question } from "../utils/parser";
-import { fetchStats, submitQuizResults, toggleBookmark } from "../utils/api";
+import { fetchStats, submitQuizResults, toggleBookmark, fetchAttemptDetails } from "../utils/api";
 
 import MenuScreen from "./MenuScreen/MenuScreen";
 import QuizScreen from "./QuizScreen/QuizScreen";
@@ -58,9 +58,17 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
   const [statsData, setStatsData] = useState<any>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
 
+  // Стан для перегляду деталей минулої спроби
+  const [reviewTitle, setReviewTitle] = useState<string | null>(null);
+  const [reviewScore, setReviewScore] = useState<number>(0);
+  const [reviewTotal, setReviewTotal] = useState<number>(0);
+  const [reviewMode, setReviewMode] = useState<string>("");
+  const [reviewQuestions, setReviewQuestions] = useState<Question[]>([]);
+  const [reviewAnswers, setReviewAnswers] = useState<{ [questionId: number]: Set<number> }>({});
+
   // Реф для обробки автосабміту при завершенні таймера
-  const quizStateRef = useRef({ score, currentQuestions, newWrongIds, clearedIds, quizMode });
-  quizStateRef.current = { score, currentQuestions, newWrongIds, clearedIds, quizMode };
+  const quizStateRef = useRef({ score, currentQuestions, newWrongIds, clearedIds, quizMode, userAnswers });
+  quizStateRef.current = { score, currentQuestions, newWrongIds, clearedIds, quizMode, userAnswers };
 
   // Ініціалізація теми при першому рендерингу сторінки
   useEffect(() => {
@@ -265,26 +273,67 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
     } else {
       // Зупиняємо таймер якщо він працював
       setTimer(null);
-      await submitResults(score, currentQuestions.length, newWrongIds, clearedIds, quizMode);
+      await submitResults(score, currentQuestions.length, newWrongIds, clearedIds, quizMode, userAnswers);
     }
+  };
+
+  // Дострокове завершення тесту
+  const handleEndQuiz = async () => {
+    setTimer(null);
+
+    // Отримуємо список реально виконаних питань
+    const answeredQs = currentQuestions.filter((q) => userAnswers[q.id] !== undefined);
+
+    if (answeredQs.length === 0) {
+      setScreen("menu");
+      return;
+    }
+
+    // Складаємо результати тільки для виконаних питань
+    await submitResults(score, answeredQs.length, newWrongIds, clearedIds, quizMode, userAnswers);
   };
 
   // Автоматичне завершення тесту по закінченню часу
   const handleAutoSubmit = async () => {
     setTimer(null);
     const state = quizStateRef.current;
-    await submitResults(state.score, state.currentQuestions.length, state.newWrongIds, state.clearedIds, state.quizMode);
+    
+    // Беремо тільки виконані питання (або всі якщо це фінал)
+    const answeredQs = state.currentQuestions.filter((q) => state.userAnswers[q.id] !== undefined);
+    const totalCount = answeredQs.length > 0 ? answeredQs.length : state.currentQuestions.length;
+
+    await submitResults(state.score, totalCount, state.newWrongIds, state.clearedIds, state.quizMode, state.userAnswers);
   };
 
-  // Відправка результатів на бекенд
+  // Відправка результатів на бекенд (включаючи детальне логування по кожному питанню)
   const submitResults = async (
     finalScore: number,
     totalQs: number,
     finalWrongs: number[],
     finalCleared: number[],
-    mode: QuizMode
+    mode: QuizMode,
+    answersLog: { [questionId: number]: Set<number> }
   ) => {
     try {
+      // Формуємо детальний масив відповідей по кожному питанню для збереження в БД
+      const details = currentQuestions
+        .filter((q) => answersLog[q.id] !== undefined)
+        .map((q) => {
+          const choices = answersLog[q.id];
+          const correctIndices = new Set(
+            q.options.map((o, i) => (o.isCorrect ? i : -1)).filter((i) => i !== -1)
+          );
+          const isCorrect =
+            choices.size === correctIndices.size &&
+            [...choices].every((v) => correctIndices.has(v));
+
+          return {
+            questionId: q.id,
+            userChoices: [...choices].join(","),
+            isCorrect,
+          };
+        });
+
       await submitQuizResults({
         correct: finalScore,
         total: totalQs,
@@ -300,6 +349,7 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
             : "random_quiz",
         newWrongIds: finalWrongs,
         clearedIds: finalCleared,
+        details,
       });
 
       // Оновлюємо локальний список помилок без перезавантаження
@@ -317,18 +367,52 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
     }
   };
 
-  // Форматування секунд у HH:MM:SS
-  const formatSeconds = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return [
-      hours > 0 ? hours.toString().padStart(2, "0") : null,
-      minutes.toString().padStart(2, "0"),
-      seconds.toString().padStart(2, "0"),
-    ]
-      .filter(Boolean)
-      .join(":");
+  // Перегляд деталей минулої спроби
+  const handleReviewPastAttempt = async (attemptId: number, correctCount: number, totalCount: number) => {
+    try {
+      setIsLoadingStats(true);
+      const rows = await fetchAttemptDetails(attemptId);
+
+      const mappedQs = rows
+        .map((r) => allQuestions.find((q) => q.id === r.questionId))
+        .filter((q): q is Question => !!q);
+
+      const mappedAns = rows.reduce((acc: { [key: number]: Set<number> }, r) => {
+        acc[r.questionId] = new Set(
+          r.userChoices ? r.userChoices.split(",").map(Number) : []
+        );
+        return acc;
+      }, {});
+
+      setReviewTitle(`Attempt Review #${attemptId}`);
+      setReviewScore(correctCount);
+      setReviewTotal(totalCount);
+      setReviewMode(rows.length > 0 ? "past_attempt" : "empty_attempt");
+      setReviewQuestions(mappedQs);
+      setReviewAnswers(mappedAns);
+
+      setIsLoadingStats(false);
+      setScreen("results");
+    } catch (err) {
+      console.error("Failed to load attempt details:", err);
+      setIsLoadingStats(false);
+    }
+  };
+
+  const handleReturnMenu = () => {
+    if (reviewTitle) {
+      // Якщо дивилися архів спроби — повертаємося назад на статистику
+      setReviewTitle(null);
+      setReviewScore(0);
+      setReviewTotal(0);
+      setReviewMode("");
+      setReviewQuestions([]);
+      setReviewAnswers({});
+      setScreen("stats");
+    } else {
+      // Якщо це був кінець тесту — повертаємося в меню
+      setScreen("menu");
+    }
   };
 
   return (
@@ -371,6 +455,7 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
           onOptionToggle={handleOptionToggle}
           onCheckAnswer={handleCheckAnswer}
           onNext={handleNext}
+          onEndQuiz={handleEndQuiz}
           isBookmarked={bookmarkedIds.includes(currentQuestions[currentIndex].id)}
           onToggleBookmark={() => handleToggleBookmark(currentQuestions[currentIndex].id)}
         />
@@ -379,14 +464,15 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
       {/* 3. TEST RESULTS SCREEN */}
       {screen === "results" && (
         <ResultsScreen
-          score={score}
-          total={currentQuestions.length}
-          quizMode={quizMode}
+          score={reviewTitle ? reviewScore : score}
+          total={reviewTitle ? reviewTotal : currentQuestions.length}
+          quizMode={reviewTitle ? reviewMode : quizMode}
           newWrongIds={newWrongIds}
           clearedIds={clearedIds}
-          currentQuestions={currentQuestions}
-          userAnswers={userAnswers}
-          onReturnMenu={() => setScreen("menu")}
+          currentQuestions={reviewTitle ? reviewQuestions : currentQuestions}
+          userAnswers={reviewTitle ? reviewAnswers : userAnswers}
+          onReturnMenu={handleReturnMenu}
+          title={reviewTitle || undefined}
         />
       )}
 
@@ -398,6 +484,7 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
           statsData={statsData}
           isLoadingStats={isLoadingStats}
           onBack={() => setScreen("menu")}
+          onReviewAttempt={handleReviewPastAttempt}
         />
       )}
     </div>

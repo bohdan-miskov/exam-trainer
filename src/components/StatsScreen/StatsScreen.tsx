@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Select from "react-select";
 import styles from "./StatsScreen.module.css";
 
 interface StatsScreenProps {
@@ -7,7 +8,67 @@ interface StatsScreenProps {
   statsData: any;
   isLoadingStats: boolean;
   onBack: () => void;
+  onReviewAttempt: (attemptId: number, correctCount: number, totalCount: number, timestamp: string) => void;
 }
+
+const SELECT_OPTIONS = [
+  { value: 1, label: "Current week (last 7 days)" },
+  { value: 2, label: "Previous week" },
+  { value: 3, label: "2 weeks ago" },
+  { value: 4, label: "3 weeks ago" },
+];
+
+const customSelectStyles = {
+  control: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: "var(--card-bg)",
+    borderColor: state.isFocused ? "var(--primary-color)" : "var(--card-border)",
+    boxShadow: state.isFocused ? "0 0 0 2px rgba(99, 102, 241, 0.2)" : "none",
+    borderRadius: "8px",
+    padding: "2px 4px",
+    fontFamily: "inherit",
+    fontSize: "15px",
+    cursor: "pointer",
+    transition: "border-color 0.2s, box-shadow 0.2s",
+    "&:hover": {
+      borderColor: "var(--primary-color)",
+    }
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    backgroundColor: "var(--bg-color)",
+    border: "1px solid var(--card-border)",
+    borderRadius: "8px",
+    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.3)",
+    zIndex: 99,
+  }),
+  option: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: state.isSelected 
+      ? "var(--primary-color)" 
+      : state.isFocused 
+      ? "rgba(255, 255, 255, 0.05)" 
+      : "transparent",
+    color: "var(--text-color)",
+    cursor: "pointer",
+    fontSize: "15px",
+    "&:active": {
+      backgroundColor: "var(--primary-color)",
+    }
+  }),
+  singleValue: (provided: any) => ({
+    ...provided,
+    color: "var(--text-color)",
+  }),
+  input: (provided: any) => ({
+    ...provided,
+    color: "var(--text-color)",
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "var(--text-muted)",
+  })
+};
 
 export default function StatsScreen({
   selectedWeek,
@@ -15,6 +76,7 @@ export default function StatsScreen({
   statsData,
   isLoadingStats,
   onBack,
+  onReviewAttempt,
 }: StatsScreenProps) {
   const [hoveredPoint, setHoveredPoint] = useState<any>(null);
 
@@ -52,6 +114,8 @@ export default function StatsScreen({
   // Координата Y для лінії прохідного балу (80%)
   const passingLineY = paddingTop + (1 - 80 / 100) * chartHeight;
 
+  const currentSelectValue = SELECT_OPTIONS.find(opt => opt.value === selectedWeek) || SELECT_OPTIONS[0];
+
   return (
     <div>
       <div className={styles.statsHeaderRow}>
@@ -66,16 +130,14 @@ export default function StatsScreen({
 
       <div className={styles.statsPeriodSelector}>
         <label htmlFor="period-select">Select Period:</label>
-        <select
+        <Select
           id="period-select"
-          value={selectedWeek}
-          onChange={(e) => setSelectedWeek(Number(e.target.value))}
-        >
-          <option value={1}>Current week (last 7 days)</option>
-          <option value={2}>Previous week</option>
-          <option value={3}>2 weeks ago</option>
-          <option value={4}>3 weeks ago</option>
-        </select>
+          options={SELECT_OPTIONS}
+          value={currentSelectValue}
+          onChange={(opt) => opt && setSelectedWeek(opt.value)}
+          styles={customSelectStyles}
+          isSearchable={false}
+        />
       </div>
 
       {isLoadingStats ? (
@@ -234,6 +296,7 @@ export default function StatsScreen({
                     <th>Correct</th>
                     <th>Total</th>
                     <th>Score</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,7 +312,7 @@ export default function StatsScreen({
                       month: "short",
                       day: "numeric",
                       year: "numeric"
-                        });
+                    });
                     const formattedTime = dateObj.toLocaleTimeString("en-US", {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -268,6 +331,15 @@ export default function StatsScreen({
                         <td>{row.total}</td>
                         <td>
                           <span className={badgeClass}>{pct.toFixed(1)}%</span>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => onReviewAttempt(row.id, row.correct, row.total, row.timestamp)}
+                            className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`}
+                            style={{ padding: "4px 8px", fontSize: "12px", borderRadius: "6px" }}
+                          >
+                            Review
+                          </button>
                         </td>
                       </tr>
                     );

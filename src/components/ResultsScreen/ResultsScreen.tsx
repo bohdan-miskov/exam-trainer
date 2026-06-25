@@ -11,26 +11,33 @@ interface ResultsScreenProps {
   currentQuestions: Question[];
   userAnswers: { [questionId: number]: Set<number> };
   onReturnMenu: () => void;
+  title?: string;
 }
 
 export default function ResultsScreen({
   score,
   total,
   quizMode,
-  newWrongIds,
-  clearedIds,
+  newWrongIds = [],
+  clearedIds = [],
   currentQuestions,
   userAnswers,
   onReturnMenu,
+  title,
 }: ResultsScreenProps) {
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
   const isPass = percentage >= 80;
 
+  // Відображаємо тільки валідні картки
+  const isReviewMode = !!title;
+
   return (
     <div>
       <div className={styles.resultsHeader}>
-        <h2 className={styles.titleGradient}>Quiz Completed!</h2>
-        <p className={styles.textMuted}>Review your session summary below</p>
+        <h2 className={styles.titleGradient}>{title || "Quiz Completed!"}</h2>
+        <p className={styles.textMuted}>
+          {isReviewMode ? "Reviewing past exam history details" : "Review your session summary below"}
+        </p>
       </div>
 
       <div className={styles.resultsSummary}>
@@ -83,16 +90,20 @@ export default function ResultsScreen({
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Mode</div>
           <div className={`${styles.statVal} ${styles.statValSm} ${styles.textCapitalize}`}>
-            {quizMode}
+            {quizMode.replace("_", " ")}
           </div>
         </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Mistakes Added</div>
-          <div className={`${styles.statVal} ${styles.statValSm} ${newWrongIds.length > 0 ? styles.textIncorrect : ""}`}>
-            {newWrongIds.length}
+        
+        {!isReviewMode && (
+          <div className={styles.statCard}>
+            <div className={styles.statLabel}>Mistakes Added</div>
+            <div className={`${styles.statVal} ${styles.statValSm} ${newWrongIds.length > 0 ? styles.textIncorrect : ""}`}>
+              {newWrongIds.length}
+            </div>
           </div>
-        </div>
-        {quizMode === "wrong" && (
+        )}
+
+        {!isReviewMode && quizMode === "wrong" && (
           <div className={styles.statCard}>
             <div className={styles.statLabel}>Questions Cleared</div>
             <div className={`${styles.statVal} ${styles.statValSm} ${clearedIds.length > 0 ? styles.textCorrect : ""}`}>
@@ -160,7 +171,7 @@ export default function ResultsScreen({
         className={`${styles.btn} ${styles.wFull} ${styles.mt1}`}
         style={{ marginTop: "24px" }}
       >
-        Return to Main Menu
+        {isReviewMode ? "Back to Statistics" : "Return to Main Menu"}
       </button>
     </div>
   );

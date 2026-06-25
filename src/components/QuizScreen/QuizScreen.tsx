@@ -15,6 +15,7 @@ interface QuizScreenProps {
   onOptionToggle: (idx: number, isMultiple: boolean) => void;
   onCheckAnswer: () => void;
   onNext: () => void;
+  onEndQuiz: () => void;
   isBookmarked: boolean;
   onToggleBookmark: () => void;
 }
@@ -32,6 +33,7 @@ export default function QuizScreen({
   onOptionToggle,
   onCheckAnswer,
   onNext,
+  onEndQuiz,
   isBookmarked,
   onToggleBookmark,
 }: QuizScreenProps) {
@@ -124,6 +126,12 @@ export default function QuizScreen({
         {!hasAnswered ? (
           <div className={styles.btnActionRow}>
             <button
+              onClick={onEndQuiz}
+              className={`${styles.btn} ${styles.btnSecondary} ${styles.wFull}`}
+            >
+              End & Submit
+            </button>
+            <button
               onClick={onCheckAnswer}
               disabled={selectedOptions.size === 0}
               className={`${styles.btn} ${styles.wFull}`}
@@ -150,6 +158,12 @@ export default function QuizScreen({
               )}
             </div>
             <div className={styles.btnActionRow}>
+              <button
+                onClick={onEndQuiz}
+                className={`${styles.btn} ${styles.btnSecondary} ${styles.wFull}`}
+              >
+                End & Submit
+              </button>
               <button onClick={onNext} className={`${styles.btn} ${styles.wFull}`}>
                 {currentIndex + 1 < totalQuestions ? "Next Question" : "Finish Test"}
               </button>

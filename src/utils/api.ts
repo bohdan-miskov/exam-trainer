@@ -1,11 +1,14 @@
-// Client API requests for the Quiz application
-
 export interface SubmitResultsPayload {
   correct: number;
   total: number;
   mode: string;
   newWrongIds: number[];
   clearedIds: number[];
+  details?: {
+    questionId: number;
+    userChoices: string;
+    isCorrect: boolean;
+  }[];
 }
 
 export async function submitQuizResults(payload: SubmitResultsPayload): Promise<{ success: boolean }> {
@@ -59,6 +62,23 @@ export async function toggleBookmark(questionId: number): Promise<{ bookmarked: 
 
   if (!response.ok) {
     throw new Error(`Failed to toggle bookmark. Status: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export interface AttemptDetailRow {
+  id: number;
+  questionId: number;
+  userChoices: string;
+  isCorrect: boolean;
+}
+
+export async function fetchAttemptDetails(attemptId: number): Promise<AttemptDetailRow[]> {
+  const response = await fetch(`/api/attempt-details?id=${attemptId}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch attempt details. Status: ${response.status}`);
   }
 
   return response.json();

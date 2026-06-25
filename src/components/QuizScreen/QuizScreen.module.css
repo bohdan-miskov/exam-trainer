@@ -1,0 +1,298 @@
+/* Scoped styles for QuizScreen */
+
+.quizHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.quizBadge {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.textCapitalize {
+  text-transform: capitalize;
+}
+
+.timerContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.timerWarning {
+  animation: pulse 1s infinite alternate;
+}
+
+.progressContainer {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--primary-gradient);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.questionText {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.selectionHint {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.textPrimary {
+  color: var(--primary-color);
+}
+
+.textMuted {
+  color: var(--text-muted);
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.optionCard {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.optionCard:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(4px);
+}
+
+.optionCard.selected {
+  background: var(--selected-bg);
+  border-color: var(--selected-border);
+  color: var(--selected-text);
+}
+
+.optionCard.correct {
+  background: var(--correct-bg);
+  border-color: var(--correct-border);
+  color: var(--correct-text);
+}
+
+.optionCard.incorrect {
+  background: var(--incorrect-bg);
+  border-color: var(--incorrect-border);
+  color: var(--incorrect-text);
+}
+
+.optionIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+  margin-top: 1px;
+}
+
+.optionCard.selected .optionIndex {
+  background: var(--primary-color);
+}
+
+.optionCard.correct .optionIndex {
+  background: var(--correct-border);
+}
+
+.optionCard.incorrect .optionIndex {
+  background: var(--incorrect-border);
+}
+
+.optionContent {
+  flex-grow: 1;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.btnActionRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.wFull {
+  width: 100%;
+}
+
+.mt1 {
+  margin-top: 4px;
+}
+
+.btn {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  opacity: 0.95;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  background: #374151;
+  background-image: none;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+.feedbackPanel {
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 15px;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedbackPanel.correct {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--correct-text);
+}
+
+.feedbackPanel.incorrect {
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  color: var(--incorrect-text);
+}
+
+.feedbackTitle {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.feedbackDetails {
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.feedbackDetails i {
+  color: var(--text-muted);
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .questionText {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .optionCard {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .optionIndex {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .optionContent {
+    font-size: 14px;
+  }
+
+  .feedbackPanel {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .feedbackTitle {
+    font-size: 15px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+}

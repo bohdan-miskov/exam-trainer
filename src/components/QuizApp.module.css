@@ -1,0 +1,21 @@
+/* Container card wrapper styles for QuizApp */
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: var(--shadow-lg), 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+}

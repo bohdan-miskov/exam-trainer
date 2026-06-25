@@ -1,0 +1,266 @@
+/* Scoped styles for ResultsScreen */
+
+.resultsHeader {
+  text-align: center;
+  margin-bottom: 24px;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.titleGradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.resultsSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.circularProgressWrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circularProgressSvg {
+  transform: rotate(-90deg);
+}
+
+.circularProgressValue {
+  position: absolute;
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.resultsScoreText {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.resultsFeedback {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.textCorrect {
+  color: var(--correct-text);
+}
+
+.textIncorrect {
+  color: var(--incorrect-text);
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statVal {
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 6px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statValSm {
+  font-size: 16px;
+}
+
+.textCapitalize {
+  text-transform: capitalize;
+}
+
+/* Detailed Session Review List */
+.reviewHeader {
+  margin-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 24px;
+  text-align: left;
+}
+
+.statsHistoryTitle {
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.reviewItem {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.reviewItem.correctReview {
+  border-left: 4px solid var(--correct-border);
+}
+
+.reviewItem.incorrectReview {
+  border-left: 4px solid var(--incorrect-border);
+}
+
+.reviewQuestion {
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.reviewAnswerLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.reviewAnswers {
+  font-size: 14px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+.mt1 {
+  margin-top: 4px;
+}
+
+.btn {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  opacity: 0.95;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.wFull {
+  width: 100%;
+}
+
+.mb7 {
+  margin-bottom: 28px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .btn {
+    padding: 12px 20px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .statCard {
+    padding: 12px 8px;
+  }
+
+  .statLabel {
+    font-size: 11px;
+  }
+
+  .statVal {
+    font-size: 20px;
+  }
+
+  .statVal.percentage {
+    font-size: 24px;
+  }
+
+  .reviewItem {
+    padding: 12px;
+  }
+
+  .reviewQuestion {
+    font-size: 14px;
+  }
+
+  .reviewAnswers {
+    font-size: 13px;
+  }
+}

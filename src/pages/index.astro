@@ -1,17 +1,32 @@
 ---
+import rawMarkdown from '../data/questions.md?raw';
+import { parseMarkdown } from '../utils/parser';
+import QuizApp from '../components/QuizApp/QuizApp';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { wrongAnswers } from '../db/schema';
+import '../styles/global.css';
 
+// 1. Серверний парсинг питань з Markdown
+const allQuestions = parseMarkdown(rawMarkdown);
+
+// 2. Отримуємо актуальні ID помилок безпосередньо з БД під час рендерингу сторінки
+const sql = neon(import.meta.env.DATABASE_URL);
+const db = drizzle(sql);
+const wrongRows = await db.select({ questionId: wrongAnswers.questionId }).from(wrongAnswers);
+const initialWrongIds = [...new Set(wrongRows.map(r => r.questionId))];
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AWS Quiz App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <QuizApp allQuestions={allQuestions} initialWrongIds={initialWrongIds} client:load />
+  </body>
 </html>

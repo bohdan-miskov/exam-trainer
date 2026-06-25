@@ -1,0 +1,53 @@
+/* CSS variables defining our dark developer theme */
+:root {
+  --bg-color: #0b0f19;
+  --card-bg: rgba(17, 24, 39, 0.75);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text-color: #f3f4f6;
+  --text-muted: #9ca3af;
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --primary-color: #6366f1;
+  --secondary-color: #a855f7;
+  --accent-color: #3b82f6;
+
+  --correct-bg: rgba(16, 185, 129, 0.12);
+  --correct-border: #10b981;
+  --correct-text: #34d399;
+
+  --incorrect-bg: rgba(244, 63, 94, 0.12);
+  --incorrect-border: #f43f5e;
+  --incorrect-text: #fb7185;
+
+  --selected-bg: rgba(99, 102, 241, 0.12);
+  --selected-border: #818cf8;
+  --selected-text: #e0e7ff;
+
+  --hover-bg: rgba(255, 255, 255, 0.03);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+body {
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-color);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 12px;
+  }
+}

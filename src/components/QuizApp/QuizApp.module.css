@@ -1,0 +1,715 @@
+/* Component-scoped CSS for QuizApp using CSS Modules */
+
+/* Base Card structure with animations and blur */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: var(--shadow-lg), 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typography styles */
+.titleGradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* Menu UI layout components */
+.menuContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menuHeader {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.menuSubtitle {
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+/* Gorgeous Gradient Buttons */
+.btn {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  opacity: 0.95;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  background: #374151;
+  background-image: none;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+.btnSecondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-color);
+}
+
+.btnSecondary:hover {
+  background: var(--hover-bg);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  opacity: 1;
+}
+
+.btnSm {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+/* Quiz UI Components */
+.quizHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.quizBadge {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.quizBadgeHighlight {
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
+}
+
+.progressContainer {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--primary-gradient);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.questionText {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+/* Modern Options Styles (no default checkbox) */
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.optionCard {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.optionCard:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(4px);
+}
+
+.optionCard.selected {
+  background: var(--selected-bg);
+  border-color: var(--selected-border);
+  color: var(--selected-text);
+}
+
+.optionCard.correct {
+  background: var(--correct-bg);
+  border-color: var(--correct-border);
+  color: var(--correct-text);
+}
+
+.optionCard.incorrect {
+  background: var(--incorrect-bg);
+  border-color: var(--incorrect-border);
+  color: var(--incorrect-text);
+}
+
+.optionIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+  margin-top: 1px;
+}
+
+.optionCard.selected .optionIndex {
+  background: var(--primary-color);
+}
+
+.optionCard.correct .optionIndex {
+  background: var(--correct-border);
+}
+
+.optionCard.incorrect .optionIndex {
+  background: var(--incorrect-border);
+}
+
+.optionContent {
+  flex-grow: 1;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Feedback panel and banners */
+.feedbackPanel {
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 15px;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedbackPanel.correct {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--correct-text);
+}
+
+.feedbackPanel.incorrect {
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  color: var(--incorrect-text);
+}
+
+.feedbackTitle {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.feedbackDetails {
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.feedbackDetails i {
+  color: var(--text-muted);
+}
+
+/* Stats view Layout */
+.statsHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.statsPeriodSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.statsPeriodSelector label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statVal {
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 6px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statVal.percentage {
+  font-size: 32px;
+}
+
+.noAttempts {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+/* Scrollable Table styles for responsive table design */
+.tableContainer {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+table.statsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.statsTable th {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px 16px;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+table.statsTable td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 14px;
+}
+
+table.statsTable tr:last-child td {
+  border-bottom: none;
+}
+
+table.statsTable tr:hover td {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.percentageBadge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.percentageBadge.high {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--correct-text);
+}
+
+.percentageBadge.mid {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.percentageBadge.low {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--incorrect-text);
+}
+
+.btnActionRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Refactored Utility Classes (Scoping within the Module) */
+.wFull {
+  width: 100%;
+}
+
+.m0 {
+  margin: 0;
+}
+
+.mt1 {
+  margin-top: 4px;
+}
+
+.mb6 {
+  margin-bottom: 24px;
+}
+
+.mb7 {
+  margin-bottom: 28px;
+}
+
+.textCapitalize {
+  text-transform: capitalize;
+}
+
+.textPrimary {
+  color: var(--primary-color);
+}
+
+.textMuted {
+  color: var(--text-muted);
+}
+
+.textCorrect {
+  color: var(--correct-text);
+}
+
+.textIncorrect {
+  color: var(--incorrect-text);
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.span2 {
+  grid-column: span 2 / span 2;
+}
+
+/* Selection Hint */
+.selectionHint {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Results Screen Layout */
+.resultsHeader {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.resultsSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.circularProgressWrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circularProgressSvg {
+  transform: rotate(-90deg);
+}
+
+.circularProgressValue {
+  position: absolute;
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.resultsScoreText {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.resultsFeedback {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Stats specific classes */
+.statValSm {
+  font-size: 16px;
+}
+
+.statsLoading {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.statsSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.06);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  margin: 0 auto 16px auto;
+  animation: spin 1s linear infinite;
+}
+
+.statsMeta {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.statsHistoryTitle {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.timestampTime {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* Review Session Layout styling */
+.reviewHeader {
+  margin-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 24px;
+  text-align: left;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.reviewItem {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.reviewItem.correctReview {
+  border-left: 4px solid var(--correct-border);
+}
+
+.reviewItem.incorrectReview {
+  border-left: 4px solid var(--incorrect-border);
+}
+
+.reviewQuestion {
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.reviewAnswerLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.reviewAnswers {
+  font-size: 14px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.timerContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.timerWarning {
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- MOBILE RESPONSIVENESS AND ADAPTIVE STYLES --- */
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .questionText {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .optionCard {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .optionIndex {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .optionContent {
+    font-size: 14px;
+  }
+
+  .feedbackPanel {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .feedbackTitle {
+    font-size: 15px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  /* Stats and Results Grids Adaptability */
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .statCard {
+    padding: 12px 8px;
+  }
+
+  .statLabel {
+    font-size: 11px;
+  }
+
+  .statVal {
+    font-size: 20px;
+  }
+
+  .statVal.percentage {
+    font-size: 24px;
+  }
+
+  .span2 {
+    grid-column: span 2 / span 2;
+  }
+
+  table.statsTable th, table.statsTable td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .timestampTime {
+    font-size: 11px;
+  }
+}

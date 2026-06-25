@@ -29,6 +29,34 @@
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
+/* Light theme overrides */
+:root[data-theme="light"] {
+  --bg-color: #f3f4f6;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --text-color: #1f2937;
+  --text-muted: #6b7280;
+  --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --primary-color: #4f46e5;
+  --secondary-color: #7c3aed;
+  --accent-color: #2563eb;
+
+  --correct-bg: rgba(16, 185, 129, 0.1);
+  --correct-border: #10b981;
+  --correct-text: #065f46;
+
+  --incorrect-bg: rgba(244, 63, 94, 0.1);
+  --incorrect-border: #f43f5e;
+  --incorrect-text: #9f1239;
+
+  --selected-bg: rgba(79, 70, 229, 0.08);
+  --selected-border: #4f46e5;
+  --selected-text: #312e81;
+
+  --hover-bg: rgba(0, 0, 0, 0.02);
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+}
+
 body {
   background-color: var(--bg-color);
   background-image: 
@@ -44,6 +72,13 @@ body {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body[data-theme="light"] {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
 }
 
 @media (max-width: 640px) {

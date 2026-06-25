@@ -3,7 +3,7 @@ import type { Question } from "../../utils/parser";
 import styles from "./QuizScreen.module.css";
 
 interface QuizScreenProps {
-  quizMode: string;
+  quizTitle: string;
   currentQuestion: Question;
   currentIndex: number;
   totalQuestions: number;
@@ -15,10 +15,12 @@ interface QuizScreenProps {
   onOptionToggle: (idx: number, isMultiple: boolean) => void;
   onCheckAnswer: () => void;
   onNext: () => void;
+  isBookmarked: boolean;
+  onToggleBookmark: () => void;
 }
 
 export default function QuizScreen({
-  quizMode,
+  quizTitle,
   currentQuestion,
   currentIndex,
   totalQuestions,
@@ -30,6 +32,8 @@ export default function QuizScreen({
   onOptionToggle,
   onCheckAnswer,
   onNext,
+  isBookmarked,
+  onToggleBookmark,
 }: QuizScreenProps) {
   const correctCount = currentQuestion.options.filter((o) => o.isCorrect).length;
   const isMultipleChoice = correctCount > 1;
@@ -37,9 +41,18 @@ export default function QuizScreen({
   return (
     <div>
       <div className={styles.quizHeader}>
-        <span className={`${styles.quizBadge} ${styles.textCapitalize}`}>
-          {quizMode} Quiz
+        <span className={`${styles.quizBadge} ${styles.textCapitalize}`} style={{ background: "rgba(99, 102, 241, 0.15)", border: "1px solid rgba(99, 102, 241, 0.25)", color: "#c7d2fe" }}>
+          {quizTitle}
         </span>
+
+        {/* Toggle Bookmark Button */}
+        <button 
+          onClick={onToggleBookmark} 
+          className={`${styles.bookmarkBtn} ${isBookmarked ? styles.isBookmarked : ""}`}
+          aria-label="Toggle Bookmark"
+        >
+          {isBookmarked ? "★ Starred" : "☆ Star"}
+        </button>
 
         {/* Countdown Timer for Exam Mode */}
         {timer !== null && (

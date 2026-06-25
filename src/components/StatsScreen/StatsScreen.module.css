@@ -28,6 +28,63 @@
   margin-bottom: 28px;
 }
 
+.chartContainer {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.chartTitle {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chartTooltip {
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.chartTooltipTitle {
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.chartTooltipVal {
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.chartDot {
+  fill: var(--bg-color);
+  stroke: url(#lineGrad);
+  stroke-width: 2.5px;
+  cursor: pointer;
+  transition: r 0.15s ease, fill 0.15s ease;
+}
+
+.chartDot:hover {
+  r: 7px;
+  fill: #fff;
+}
+
 .statsPeriodSelector label {
   font-size: 14px;
   font-weight: 500;

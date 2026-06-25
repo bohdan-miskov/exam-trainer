@@ -13,3 +13,9 @@ export const wrongAnswers = pgTable("wrong_answers", {
   questionId: integer("question_id").notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
+
+export const bookmarks = pgTable("bookmarks", {
+  id: serial("id").primaryKey(),
+  questionId: integer("question_id").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});

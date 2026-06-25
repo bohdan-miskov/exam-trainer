@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { Question } from "../utils/parser";
-import { fetchStats, submitQuizResults } from "../api";
+import { fetchStats, submitQuizResults, toggleBookmark } from "../utils/api";
 
 import MenuScreen from "./MenuScreen/MenuScreen";
 import QuizScreen from "./QuizScreen/QuizScreen";
@@ -12,36 +12,40 @@ import styles from "./QuizApp.module.css";
 interface Props {
   allQuestions: Question[];
   initialWrongIds: number[];
+  initialBookmarkedIds: number[];
 }
 
 type Screen = "menu" | "quiz" | "results" | "stats";
-type QuizMode = "random" | "wrong" | "exam";
+type QuizMode = "random" | "wrong" | "exam" | "bookmark" | "topic";
 
-export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
+export default function QuizApp({ allQuestions, initialWrongIds, initialBookmarkedIds }: Props) {
   const [screen, setScreen] = useState<Screen>("menu");
   const [quizMode, setQuizMode] = useState<QuizMode>("random");
+  const [quizTitle, setQuizTitle] = useState<string>("Random Quiz");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState<Set<number>>(
-    new Set(),
-  );
+  const [selectedOptions, setSelectedOptions] = useState<Set<number>>(new Set());
 
   // Стан для відображення зворотного зв'язку після відповіді
   const [hasAnswered, setHasAnswered] = useState(false);
   const [isCurrentCorrect, setIsCurrentCorrect] = useState(false);
 
+  // Світла/Темна тема
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
   // Локальний список неправильних ID для уникнення перезавантаження сторінки
   const [wrongIds, setWrongIds] = useState<number[]>(initialWrongIds);
+
+  // Локальний список закладок
+  const [bookmarkedIds, setBookmarkedIds] = useState<number[]>(initialBookmarkedIds);
 
   // Списки для збору результатів поточного тесту
   const [newWrongIds, setNewWrongIds] = useState<number[]>([]);
   const [clearedIds, setClearedIds] = useState<number[]>([]);
   const [score, setScore] = useState(0);
 
-  // Збереження відповідей користувача для фінального перегляду спроби
-  const [userAnswers, setUserAnswers] = useState<{
-    [questionId: number]: Set<number>;
-  }>({});
+  // Збереження відповідей користувача для підсумкового перегляду спроби
+  const [userAnswers, setUserAnswers] = useState<{ [questionId: number]: Set<number> }>({});
 
   // Стан таймера для симулятора іспиту
   const [timer, setTimer] = useState<number | null>(null);
@@ -55,19 +59,25 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
   const [isLoadingStats, setIsLoadingStats] = useState(false);
 
   // Реф для обробки автосабміту при завершенні таймера
-  const quizStateRef = useRef({
-    score,
-    currentQuestions,
-    newWrongIds,
-    clearedIds,
-    quizMode,
-  });
-  quizStateRef.current = {
-    score,
-    currentQuestions,
-    newWrongIds,
-    clearedIds,
-    quizMode,
+  const quizStateRef = useRef({ score, currentQuestions, newWrongIds, clearedIds, quizMode });
+  quizStateRef.current = { score, currentQuestions, newWrongIds, clearedIds, quizMode };
+
+  // Ініціалізація теми при першому рендерингу сторінки
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("quiz-theme") as "dark" | "light" | null;
+    const initialTheme = savedTheme || "dark";
+    setTheme(initialTheme);
+    document.documentElement.setAttribute("data-theme", initialTheme);
+    document.body.setAttribute("data-theme", initialTheme);
+  }, []);
+
+  // Перемикання теми
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    document.body.setAttribute("data-theme", nextTheme);
+    localStorage.setItem("quiz-theme", nextTheme);
   };
 
   // Завантаження статистики з API при відкритті вкладки або зміні тижня
@@ -107,6 +117,7 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
     const shuffled = [...allQuestions]
       .sort(() => 0.5 - Math.random())
       .slice(0, 20);
+    setQuizTitle("Random Quiz");
     startQuiz(shuffled, "random");
   };
 
@@ -114,14 +125,44 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
   const startWrongQuiz = () => {
     const wrongQs = allQuestions.filter((q) => wrongIds.includes(q.id));
     if (wrongQs.length === 0) {
-      setMenuError(
-        "No incorrect answers recorded yet! Take a random quiz first.",
-      );
+      setMenuError("No incorrect answers recorded yet! Take a random quiz first.");
       setTimeout(() => setMenuError(null), 4000);
       return;
     }
     const shuffled = [...wrongQs].sort(() => 0.5 - Math.random()).slice(0, 20);
+    setQuizTitle("Incorrect Answers Review");
     startQuiz(shuffled, "wrong");
+  };
+
+  // Ініціалізація тесту по закладках (до 20 питань)
+  const startBookmarkQuiz = () => {
+    const bookmarkQs = allQuestions.filter((q) => bookmarkedIds.includes(q.id));
+    if (bookmarkQs.length === 0) {
+      setMenuError("No bookmarked questions yet! Toggle the Star icon during a quiz.");
+      setTimeout(() => setMenuError(null), 4000);
+      return;
+    }
+    const shuffled = [...bookmarkQs].sort(() => 0.5 - Math.random()).slice(0, 20);
+    setQuizTitle("Bookmarked Questions");
+    startQuiz(shuffled, "bookmark");
+  };
+
+  // Ініціалізація тематичного квізу за ключовими словами
+  const startTopicQuiz = (topicName: string, keywords: string[]) => {
+    const matched = allQuestions.filter((q) => {
+      const textToSearch = (q.text + " " + q.options.map((o) => o.text).join(" ")).toLowerCase();
+      return keywords.some((kw) => textToSearch.includes(kw));
+    });
+
+    if (matched.length === 0) {
+      setMenuError(`No questions found for topic: ${topicName}`);
+      setTimeout(() => setMenuError(null), 4000);
+      return;
+    }
+
+    const shuffled = [...matched].sort(() => 0.5 - Math.random()).slice(0, 20);
+    setQuizTitle(`${topicName} Focus`);
+    startQuiz(shuffled, "topic");
   };
 
   // Ініціалізація симулятора іспиту (65 питань, 90 хвилин)
@@ -130,6 +171,7 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
       .sort(() => 0.5 - Math.random())
       .slice(0, 65);
     setTimer(90 * 60); // 90 хвилин в секундах
+    setQuizTitle("Exam Simulator");
     startQuiz(shuffled, "exam");
   };
 
@@ -144,6 +186,22 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
     setHasAnswered(false);
     setUserAnswers({});
     setScreen("quiz");
+  };
+
+  // Додати/видалити закладку в БД та оновити локальний стан
+  const handleToggleBookmark = async (qid: number) => {
+    try {
+      const res = await toggleBookmark(qid);
+      setBookmarkedIds((prev) => {
+        if (res.bookmarked) {
+          return [...prev, qid];
+        } else {
+          return prev.filter((id) => id !== qid);
+        }
+      });
+    } catch (err) {
+      console.error("Failed to toggle bookmark:", err);
+    }
   };
 
   // Вибір варіанта відповіді (одиничний чи множинний вибір)
@@ -166,7 +224,7 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
     const correctIndices = new Set(
       currentQ.options
         .map((opt, i) => (opt.isCorrect ? i : -1))
-        .filter((i) => i !== -1),
+        .filter((i) => i !== -1)
     );
 
     const isCorrect =
@@ -207,13 +265,7 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
     } else {
       // Зупиняємо таймер якщо він працював
       setTimer(null);
-      await submitResults(
-        score,
-        currentQuestions.length,
-        newWrongIds,
-        clearedIds,
-        quizMode,
-      );
+      await submitResults(score, currentQuestions.length, newWrongIds, clearedIds, quizMode);
     }
   };
 
@@ -221,13 +273,7 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
   const handleAutoSubmit = async () => {
     setTimer(null);
     const state = quizStateRef.current;
-    await submitResults(
-      state.score,
-      state.currentQuestions.length,
-      state.newWrongIds,
-      state.clearedIds,
-      state.quizMode,
-    );
+    await submitResults(state.score, state.currentQuestions.length, state.newWrongIds, state.clearedIds, state.quizMode);
   };
 
   // Відправка результатів на бекенд
@@ -236,18 +282,22 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
     totalQs: number,
     finalWrongs: number[],
     finalCleared: number[],
-    mode: QuizMode,
+    mode: QuizMode
   ) => {
     try {
       await submitQuizResults({
         correct: finalScore,
         total: totalQs,
-        mode:
-          mode === "exam"
-            ? "exam_simulation"
-            : mode === "wrong"
-              ? "wrong_quiz"
-              : "random_quiz",
+        mode: 
+          mode === "exam" 
+            ? "exam_simulation" 
+            : mode === "wrong" 
+            ? "wrong_quiz" 
+            : mode === "bookmark"
+            ? "bookmark_quiz"
+            : mode === "topic"
+            ? "topic_focus_quiz"
+            : "random_quiz",
         newWrongIds: finalWrongs,
         clearedIds: finalCleared,
       });
@@ -282,14 +332,25 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
   };
 
   return (
-    <div className={styles.card}>
+    <div>
+      {/* Перемикач світлої/темної теми */}
+      <div className={styles.themeToggleContainer}>
+        <button onClick={toggleTheme} className={styles.themeToggleBtn}>
+          {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+        </button>
+      </div>
+
       {/* 1. MAIN MENU SCREEN */}
       {screen === "menu" && (
         <MenuScreen
           wrongCount={wrongIds.length}
+          bookmarkedCount={bookmarkedIds.length}
+          allQuestions={allQuestions}
           onStartRandom={startRandomQuiz}
           onStartExam={startExamSimulator}
           onStartWrong={startWrongQuiz}
+          onStartBookmark={startBookmarkQuiz}
+          onStartTopic={startTopicQuiz}
           onViewStats={() => setScreen("stats")}
           menuError={menuError}
         />
@@ -298,7 +359,7 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
       {/* 2. QUIZ INTERFACE SCREEN */}
       {screen === "quiz" && currentQuestions.length > 0 && (
         <QuizScreen
-          quizMode={quizMode}
+          quizTitle={quizTitle}
           currentQuestion={currentQuestions[currentIndex]}
           currentIndex={currentIndex}
           totalQuestions={currentQuestions.length}
@@ -310,6 +371,8 @@ export default function QuizApp({ allQuestions, initialWrongIds }: Props) {
           onOptionToggle={handleOptionToggle}
           onCheckAnswer={handleCheckAnswer}
           onNext={handleNext}
+          isBookmarked={bookmarkedIds.includes(currentQuestions[currentIndex].id)}
+          onToggleBookmark={() => handleToggleBookmark(currentQuestions[currentIndex].id)}
         />
       )}
 

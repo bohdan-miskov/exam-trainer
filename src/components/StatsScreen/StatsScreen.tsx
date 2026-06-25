@@ -103,7 +103,7 @@ export default function StatsScreen({
 
   // Опис лінії тренду
   const pathD = points.length > 0
-    ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map((p) => `L ${p.x} ${p.y}`).join(" ")
+    ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map((p: { x: number; y: number }) => `L ${p.x} ${p.y}`).join(" ")
     : "";
 
   // Опис заповнення під лінією тренду

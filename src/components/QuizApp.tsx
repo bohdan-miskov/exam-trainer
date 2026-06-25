@@ -415,6 +415,20 @@ export default function QuizApp({ allQuestions, initialWrongIds, initialBookmark
     }
   };
 
+  // Форматування секунд у HH:MM:SS
+  const formatSeconds = (totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return [
+      hours > 0 ? hours.toString().padStart(2, "0") : null,
+      minutes.toString().padStart(2, "0"),
+      seconds.toString().padStart(2, "0"),
+    ]
+      .filter(Boolean)
+      .join(":");
+  };
+
   return (
     <div>
       {/* Перемикач світлої/темної теми */}
